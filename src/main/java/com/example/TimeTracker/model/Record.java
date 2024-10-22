@@ -1,10 +1,12 @@
 package com.example.TimeTracker.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Data
 @Table(name = "time_records")
 public class Record {
     @Id
