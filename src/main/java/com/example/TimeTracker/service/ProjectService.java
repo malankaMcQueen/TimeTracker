@@ -2,6 +2,7 @@ package com.example.TimeTracker.service;
 
 import com.example.TimeTracker.dto.NewProjectDTO;
 import com.example.TimeTracker.dto.ProjectUsersDTO;
+import com.example.TimeTracker.exception.BadRequestException;
 import com.example.TimeTracker.exception.ResourceNotFoundException;
 import com.example.TimeTracker.model.Project;
 import com.example.TimeTracker.model.User;
@@ -16,9 +17,12 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class ProjectService {
-    ProjectRepository projectRepository;
-    UserRepository userRepository;
+    private ProjectRepository projectRepository;
+    private UserRepository userRepository;
     public Project createNewProject(NewProjectDTO newProjectDTO) {
+        if (projectRepository.findByName(newProjectDTO.getName()).isPresent()) {
+            throw new BadRequestException("Project already exist");
+        }
         Project project = new Project();
         project.setName(newProjectDTO.getName());
         project.setUsers(new ArrayList<>());
@@ -29,11 +33,11 @@ public class ProjectService {
         return projectRepository.findAll();
     }
 
-    public Project addUserToProject(Long projectId, ProjectUsersDTO projectUsersDTO) {
-        Project project = projectRepository.findById(projectId).orElseThrow(()
-                -> new ResourceNotFoundException("Project with id: " + projectId + "doesnt exist"));
-        User user = userRepository.findById(projectUsersDTO.getUserId()).orElseThrow(()
-                -> new ResourceNotFoundException("User with id: " + projectUsersDTO.getUserId() + "doesnt exist"));
+    public Project addUserToProject(ProjectUsersDTO projectUsersDTO) {
+        Project project = projectRepository.findByName(projectUsersDTO.getProjectName()).orElseThrow(()
+                -> new ResourceNotFoundException("Project: " + projectUsersDTO.getProjectName() + "doesnt exist"));
+        User user = userRepository.findByEmail(projectUsersDTO.getUserEmail()).orElseThrow(()
+                -> new ResourceNotFoundException("User with id: " + projectUsersDTO.getUserEmail() + "doesnt exist"));
         if (!project.getUsers().contains(user)) {
             project.getUsers().add(user);
             projectRepository.save(project);
@@ -41,11 +45,11 @@ public class ProjectService {
         return project;
     }
 
-    public Project removeUserToProject(Long projectId, ProjectUsersDTO projectUsersDTO) {
-        Project project = projectRepository.findById(projectId).orElseThrow(()
-                -> new ResourceNotFoundException("Project with id: " + projectId + "doesnt exist"));
-        User user = userRepository.findById(projectUsersDTO.getUserId()).orElseThrow(()
-                -> new ResourceNotFoundException("User with id: " + projectUsersDTO.getUserId() + "doesnt exist"));
+    public Project removeUserToProject(ProjectUsersDTO projectUsersDTO) {
+        Project project = projectRepository.findByName(projectUsersDTO.getProjectName()).orElseThrow(()
+                -> new ResourceNotFoundException("Project: " + projectUsersDTO.getProjectName() + "doesnt exist"));
+        User user = userRepository.findByEmail(projectUsersDTO.getUserEmail()).orElseThrow(()
+                -> new ResourceNotFoundException("User with id: " + projectUsersDTO.getUserEmail() + "doesnt exist"));
         project.getUsers().remove(user);
         return projectRepository.save(project);
     }

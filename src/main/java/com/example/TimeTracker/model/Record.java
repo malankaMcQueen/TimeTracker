@@ -1,5 +1,7 @@
 package com.example.TimeTracker.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,10 +19,10 @@ public class Record {
     private User user;
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
+    @JsonIgnoreProperties(value = "users")
     private Project project;
     @Column(nullable = false)
     private LocalDateTime startTime;
-    @Column(nullable = false)
     private LocalDateTime endTime;
 }
 

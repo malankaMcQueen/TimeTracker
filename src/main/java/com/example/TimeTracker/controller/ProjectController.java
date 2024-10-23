@@ -30,15 +30,14 @@ public class ProjectController {
         return new ResponseEntity<>(projectService.getAllProjects(), HttpStatus.OK);
     }
 
-    @PatchMapping("/{projectId}/users")
-    public ResponseEntity<Project> modifyProjectUsers(@PathVariable Long projectId,
-                                                      @RequestBody ProjectUsersDTO projectUsersDTO) {
+    @PatchMapping("/modify/users")
+    public ResponseEntity<Project> modifyProjectUsers(@RequestBody ProjectUsersDTO projectUsersDTO) {
         Project project = null;
         if (projectUsersDTO.getAction().equals(ProjectUsersAction.ADD_USER)) {
-            project = projectService.addUserToProject(projectId, projectUsersDTO);
+            project = projectService.addUserToProject(projectUsersDTO);
         }
         else if (projectUsersDTO.getAction().equals(ProjectUsersAction.REMOVE_USER)) {
-            project = projectService.removeUserToProject(projectId, projectUsersDTO);
+            project = projectService.removeUserToProject(projectUsersDTO);
         }
         return new ResponseEntity<>(project, HttpStatus.OK);
     }
@@ -48,4 +47,6 @@ public class ProjectController {
         projectService.deleteProject(projectId);
         return new ResponseEntity<>("Success", HttpStatus.OK);
     }
+
+
 }

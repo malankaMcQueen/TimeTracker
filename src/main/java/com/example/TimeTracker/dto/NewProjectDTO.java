@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class NewProjectDTO {
-    String name;
+    private String name;
 }

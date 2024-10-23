@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ProjectUsersDTO {
-    Long userId;
-    ProjectUsersAction action;
+    private String projectName;
+    private String userEmail;
+    private ProjectUsersAction action;
 }
