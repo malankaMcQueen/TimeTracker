@@ -19,17 +19,17 @@ import java.util.List;
 public class ProjectController {
 
     private ProjectService projectService;
-
+    // Создание нового проекта
     @PostMapping("/create")
     public ResponseEntity<Project> createNewProject(@RequestBody NewProjectDTO newProject) {
         return new ResponseEntity<>(projectService.createNewProject(newProject), HttpStatus.CREATED);
     }
-
+    // Получить все проекты
     @GetMapping("/getAll")
     public ResponseEntity<List<Project>> getAllProjects() {
         return new ResponseEntity<>(projectService.getAllProjects(), HttpStatus.OK);
     }
-
+    // Назначить/снять пользователя на/с проекта
     @PatchMapping("/modify/users")
     public ResponseEntity<Project> modifyProjectUsers(@RequestBody ProjectUsersDTO projectUsersDTO) {
         Project project = null;
@@ -41,7 +41,7 @@ public class ProjectController {
         }
         return new ResponseEntity<>(project, HttpStatus.OK);
     }
-
+    // Удалить проект
     @DeleteMapping("/delete/{projectId}")
     public ResponseEntity<String> deleteProject(@PathVariable Long projectId) {
         projectService.deleteProject(projectId);

@@ -15,8 +15,6 @@ import java.util.Date;
 @Component
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-//    @AspectAnnotation
-
     @ExceptionHandler(UserAlreadyExistException.class)
     public ResponseEntity<ErrorMessage> userAlreadyExistException(final UserAlreadyExistException ex,
                                                             final WebRequest request) {
@@ -26,28 +24,6 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false));
         return new ResponseEntity<>(message, HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<ErrorMessage> invalidCredentialsException(final InvalidCredentialsException ex,
-                                                                  final WebRequest request) {
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.UNAUTHORIZED.value(),
-                new Date(),
-                ex.getMessage(),
-                request.getDescription(false));
-        return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<ErrorMessage> tokenExpiredException(final TokenExpiredException ex,
-                                                                    final WebRequest request) {
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.UNAUTHORIZED.value(),
-                new Date(),
-                ex.getMessage(),
-                request.getDescription(false));
-        return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)

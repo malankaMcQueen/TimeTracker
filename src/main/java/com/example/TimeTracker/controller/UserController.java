@@ -2,6 +2,7 @@ package com.example.TimeTracker.controller;
 
 
 import com.example.TimeTracker.dto.UserChangePasswordDTO;
+import com.example.TimeTracker.model.Role;
 import com.example.TimeTracker.model.User;
 import com.example.TimeTracker.repository.UserRepository;
 import com.example.TimeTracker.service.UserService;
@@ -18,25 +19,27 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
-
-    @PostMapping("/create")
-    public ResponseEntity<User> createNewUser(@RequestBody User user) {
-        return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
-    }
-
+    // Получить всех пользователей
     @GetMapping("/getAll")
     public ResponseEntity<List<User>> getAllUsers() {
         return new ResponseEntity<>(userService.getAll(), HttpStatus.OK);
     }
-
-    @DeleteMapping("/delete/{userId}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
-        return new ResponseEntity<>("Success", HttpStatus.OK);
+    // Изменить роль юзеру
+    @PutMapping("/changeRole")
+    public ResponseEntity<User> changeRole(@RequestParam String userEmail, @RequestParam Role newRole) {
+        return new ResponseEntity<>(userService.changeRole(userEmail, newRole), HttpStatus.OK);
     }
 
+    // Удалить пользователя
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteUser() {
+        userService.deleteUser();
+        return new ResponseEntity<>("Success", HttpStatus.OK);
+    }
+    // Изменить пароль от аккаунта
     @PutMapping("/changePassword")
     public ResponseEntity<User> changePassword(@RequestBody UserChangePasswordDTO userChangePasswordDTO) {
         return new ResponseEntity<>(userService.changePassword(userChangePasswordDTO), HttpStatus.OK);
     }
+
 }

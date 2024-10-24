@@ -33,6 +33,7 @@ public class ProjectService {
         return projectRepository.findAll();
     }
 
+    // Добавить нового юзера в проект
     public Project addUserToProject(ProjectUsersDTO projectUsersDTO) {
         Project project = projectRepository.findByName(projectUsersDTO.getProjectName()).orElseThrow(()
                 -> new ResourceNotFoundException("Project: " + projectUsersDTO.getProjectName() + "doesnt exist"));
@@ -44,7 +45,7 @@ public class ProjectService {
         }
         return project;
     }
-
+    // Удалить юзера из проекта
     public Project removeUserToProject(ProjectUsersDTO projectUsersDTO) {
         Project project = projectRepository.findByName(projectUsersDTO.getProjectName()).orElseThrow(()
                 -> new ResourceNotFoundException("Project: " + projectUsersDTO.getProjectName() + "doesnt exist"));

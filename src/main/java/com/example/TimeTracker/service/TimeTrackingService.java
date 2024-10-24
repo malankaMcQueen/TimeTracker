@@ -9,6 +9,7 @@ import com.example.TimeTracker.repository.ProjectRepository;
 import com.example.TimeTracker.repository.RecordRepository;
 import com.example.TimeTracker.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -23,10 +24,6 @@ public class TimeTrackingService {
     private ProjectRepository projectRepository;
     private RecordRepository recordRepository;
 
-    public Record createNewRecord(Record record) {
-        return null;
-    }
-
     public List<Record> getAllRecords() {
         return recordRepository.findAll();
     }
@@ -35,15 +32,19 @@ public class TimeTrackingService {
         recordRepository.deleteById(recordId);
     }
 
-    public Record startTracking(String projectName, String userEmail) {
+    // Начать трекинг времени
+    public Record startTracking(String projectName) {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName(); // Получаю емайл из контекста
         User user = userRepository.findByEmail(userEmail).orElseThrow(()
                 -> new ResourceNotFoundException("User with email: " + userEmail + " doesn't exist"));
+        // Поиск записи в которой время конца = null
         Optional<Record> openRecords = recordRepository.findByUserAndEndTimeIsNull(user);
         if (openRecords.isPresent()) {
             throw new IllegalStateException("There is already an open time record for this user.");
         }
         Project project = projectRepository.findByName(projectName).orElseThrow(()
                 -> new ResourceNotFoundException("Project: " + projectName + " doesn't exist"));
+        // Проверка установлен ли пользователь на этот проект
         if (!project.getUsers().contains(user)) {
             throw new BadRequestException("User dont set on this project");
         }
@@ -54,12 +55,16 @@ public class TimeTrackingService {
         record.setEndTime(null);
         return recordRepository.save(record);
     }
+    // Остановить трекинг
+    public Record stopTracking(String projectName) {
+        // Получить емайл из контекста
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
-    public Record stopTracking(String projectName, String userEmail) {
         Project project = projectRepository.findByName(projectName).orElseThrow(()
                 -> new ResourceNotFoundException("Project: " + projectName + " doesn't exist"));
         User user = userRepository.findByEmail(userEmail).orElseThrow(()
                 -> new ResourceNotFoundException("User with email: " + userEmail + " doesn't exist"));
+        // Поиск записи в которой время конца = null
         Record record = recordRepository.findByUserAndProjectAndEndTimeIsNull(user, project)
                 .orElseThrow(() -> new IllegalStateException("No active time record found for this project and user"));
         record.setEndTime(LocalDateTime.now());
@@ -75,6 +80,7 @@ public class TimeTrackingService {
         // Суммируем разницу между startTime и endTime для всех записей
         Duration totalTime = Duration.ZERO;
         for (Record record : records) {
+            // Если время конца не установлено, беру текущее
             if (record.getEndTime() == null) {
                 record.setEndTime(LocalDateTime.now());
             }
