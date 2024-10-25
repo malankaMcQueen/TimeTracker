@@ -9,6 +9,8 @@ import com.example.TimeTracker.repository.ProjectRepository;
 import com.example.TimeTracker.repository.RecordRepository;
 import com.example.TimeTracker.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,16 @@ public class TimeTrackingService {
     }
 
     public void deleteRecord(Long recordId) {
-        recordRepository.deleteById(recordId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            for (GrantedAuthority authority : authentication.getAuthorities()) {
+                if (authority.getAuthority().equals("ROLE_ADMIN")) {
+                    recordRepository.deleteById(recordId);
+                    return;
+                }
+            }
+        }
+        throw new IllegalArgumentException("Illegal access");
     }
 
     // Начать трекинг времени

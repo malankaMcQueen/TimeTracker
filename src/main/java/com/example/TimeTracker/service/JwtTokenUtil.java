@@ -4,6 +4,7 @@ package com.example.TimeTracker.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,14 @@ public class JwtTokenUtil {
 
     @Value("${jwt.secret.access}")
     private String SECRET_KEY;
+
+    @PostConstruct
+    public void init() {
+        if (SECRET_KEY == null || SECRET_KEY.isEmpty()) {
+            throw new IllegalArgumentException("JWT Secret Key is missing in application properties.");
+        }
+    }
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
